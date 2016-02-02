@@ -71,6 +71,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 'django.contrib.sites',
+    'rest_framework',
+    'django_events',
 ]
 
 
@@ -132,13 +134,6 @@ DATABASES = {
 }
 
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-# SESSION_SAVE_EVERY_REQUEST
-
-# if HOSTNAME in RELEASE_HOSTS:
-#     CACHES['persistent']['OPTIONS']['PASSWORD'] = '111'
-
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -166,9 +161,13 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+
 # BATTERIES
 # =========
-
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+    'PAGE_SIZE': 10
+}
 
 
 # REDEFINE
