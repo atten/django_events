@@ -32,7 +32,7 @@ class Event(models.Model):
     initiator = models.ForeignKey(Source, related_name="events_initiated_by")
     target = models.ForeignKey(Source, related_name="events_targeted_to")
     type = models.SmallIntegerField(choices=EVENT_TYPES)
-    args = JSONField(default=dict)
+    args = JSONField(default=dict, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

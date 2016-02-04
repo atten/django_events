@@ -1,12 +1,14 @@
-from rest_framework import viewsets, mixins, permissions
+from rest_framework import viewsets, mixins, permissions, response
 from .serializers import *
 from .models import *
 
 
-class HasValidApiKey(permissions.BasePermission):
+class HasValidApiKeyOrAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
+        if request.user and request.user.is_staff:
+            return True
         try:
-            val = request.GET['api_key'] or request.data['api_key']
+            val = request.GET.get('api_key') or request.data.get('api_key')
             ip_addr = request.META['REMOTE_ADDR']
             ApiKey.objects.get(key=val, is_active=True, allowed_origins__icontains=ip_addr)
             return True
@@ -21,7 +23,7 @@ class SourceViewSet(mixins.CreateModelMixin,
                     viewsets.GenericViewSet):
     queryset = Source.objects.all()
     serializer_class = SourceSerializer
-    permission_classes = (HasValidApiKey,)
+    permission_classes = (HasValidApiKeyOrAdmin,)
 
 
 class EventViewSet(mixins.CreateModelMixin,
@@ -30,4 +32,22 @@ class EventViewSet(mixins.CreateModelMixin,
                    viewsets.GenericViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    permission_classes = (HasValidApiKey,)
+    permission_classes = (HasValidApiKeyOrAdmin,)
+
+    def get_queryset(self):
+        queryset = Event.objects.all()
+        d = self.request.query_params
+
+        source = d.get('source')
+        if source is not None:
+            queryset = queryset.filter(source=source)
+
+        initiator = d.get('initiator')
+        if initiator is not None:
+            queryset = queryset.filter(initiator=initiator)
+
+        target = d.get('target')
+        if target is not None:
+            queryset = queryset.filter(target=target)
+
+        return queryset
