@@ -1,33 +1,33 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins, permissions
 from .serializers import *
 from .models import *
 
 
-class SourceViewSet(viewsets.ModelViewSet):
+class HasValidApiKey(permissions.BasePermission):
+    def has_permission(self, request, view):
+        try:
+            val = request.GET['api_key'] or request.data['api_key']
+            ip_addr = request.META['REMOTE_ADDR']
+            ApiKey.objects.get(key=val, is_active=True, allowed_origins__icontains=ip_addr)
+            return True
+        except ApiKey.DoesNotExist:
+            return False
+
+
+class SourceViewSet(mixins.CreateModelMixin,
+                    mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    viewsets.GenericViewSet):
     queryset = Source.objects.all()
     serializer_class = SourceSerializer
+    permission_classes = (HasValidApiKey,)
 
 
-class EventViewSet(viewsets.ModelViewSet):
+class EventViewSet(mixins.CreateModelMixin,
+                   mixins.RetrieveModelMixin,
+                   mixins.ListModelMixin,
+                   viewsets.GenericViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-
-
-# TODO: приспособить api key к views
-# class UserDetailView(APIView):
-#     metadata_class = MinimalMetadata
-#
-#     def get(self, request, username, format=None):
-#         try:
-#             _api_key = request.GET.get('api_key', None)
-#             ApiKey.objects.get(key=_api_key, is_active=True)
-#         except ApiKey.DoesNotExist:
-#             raise PermissionDenied
-#
-#         try:
-#             user = User.objects.get(username=username)
-#         except User.DoesNotExist:
-#             raise Http404
-#
-#         serializer = UserSerializer(user)
-#         return Response(serializer.data)
+    permission_classes = (HasValidApiKey,)

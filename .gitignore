@@ -60,3 +60,6 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+django_events/secret_settings.py
+django_events/local_settings.py

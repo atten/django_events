@@ -45,30 +45,26 @@ class Event(models.Model):
 #     transports = BitField()
 
 
+def generate_api_key():
+    return uuid4().hex
+
+
 class ApiKey(models.Model):
     label = models.CharField(max_length=64, blank=True, default='Default')
-    key = models.CharField(max_length=32, unique=True)
+    key = models.CharField(max_length=32, unique=True, editable=False, default=generate_api_key)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    allowed_origins = models.TextField(blank=True, null=True)
+    allowed_origins = models.TextField(blank=True, default='127.0.0.1', help_text=_('List of IP addresses'))
 
-    @classmethod
-    def generate_api_key(cls):
-        return uuid4().hex
-
-    def save(self, *args, **kwargs):
-        if not self.key:
-            self.key = ApiKey.generate_api_key()
-        super(ApiKey, self).save(*args, **kwargs)
-
-    def get_allowed_origins(self):
-        if not self.allowed_origins:
-            return []
-        return filter(bool, self.allowed_origins.split('\n'))
-
-    def get_audit_log_data(self):
-        return {
-            'label': self.label,
-            'key': self.key,
-            'is_active': self.is_active,
-        }
+    # def validate(self, origin):
+    #     if not self.allowed_origins:
+    #         return False
+    #     origins = self.allowed_origins.split('\n')
+    #     return origin in origins
+    #
+    # def get_audit_log_data(self):
+    #     return {
+    #         'label': self.label,
+    #         'key': self.key,
+    #         'is_active': self.is_active,
+    #     }

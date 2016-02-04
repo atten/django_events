@@ -12,3 +12,9 @@ class EventAdmin(admin.ModelAdmin):
     list_display = ['id', 'source', 'initiator', 'target', 'type', 'args', 'timestamp']
 
 admin.site.register(Event, EventAdmin)
+
+
+class ApiKeyAdmin(admin.ModelAdmin):
+    list_display = ['id', 'label', 'key', 'is_active', 'created_at', 'allowed_origins']
+
+admin.site.register(ApiKey, ApiKeyAdmin)
