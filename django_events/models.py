@@ -39,12 +39,6 @@ class Event(models.Model):
         return 'Event:%d' % self.id
 
 
-# class UserStream(models.Model):
-#     stream = models.ForeignKey(Stream)
-#     user = models.ForeignKey(User)
-#     transports = BitField()
-
-
 class ApiKey(models.Model):
     key = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     label = models.CharField(max_length=64, blank=True, default='Default')
@@ -52,12 +46,6 @@ class ApiKey(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     allowed_origins = models.TextField(blank=True, default='127.0.0.1', help_text=_('List of IP addresses'))
 
-    # def validate(self, origin):
-    #     if not self.allowed_origins:
-    #         return False
-    #     origins = self.allowed_origins.split('\n')
-    #     return origin in origins
-    #
     # def get_audit_log_data(self):
     #     return {
     #         'label': self.label,
