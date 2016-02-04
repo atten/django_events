@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.utils.translation import ugettext_lazy as _
-from uuid import uuid4
+import uuid
 
 
 class Source(models.Model):
@@ -32,7 +32,7 @@ class Event(models.Model):
     initiator = models.ForeignKey(Source, related_name="events_initiated_by")
     target = models.ForeignKey(Source, related_name="events_targeted_to")
     type = models.SmallIntegerField(choices=EVENT_TYPES)
-    args = JSONField(default=dict, blank=True)
+    params = JSONField(default=dict, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -45,13 +45,9 @@ class Event(models.Model):
 #     transports = BitField()
 
 
-def generate_api_key():
-    return uuid4().hex
-
-
 class ApiKey(models.Model):
+    key = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     label = models.CharField(max_length=64, blank=True, default='Default')
-    key = models.CharField(max_length=32, unique=True, editable=False, default=generate_api_key)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     allowed_origins = models.TextField(blank=True, default='127.0.0.1', help_text=_('List of IP addresses'))

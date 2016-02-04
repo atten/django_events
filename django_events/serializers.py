@@ -11,4 +11,4 @@ class SourceSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ('source', 'initiator', 'target', 'type', 'args', 'timestamp')
+        fields = ('source', 'initiator', 'target', 'type', 'params', 'timestamp')

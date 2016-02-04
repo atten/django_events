@@ -12,7 +12,7 @@ class HasValidApiKeyOrAdmin(permissions.BasePermission):
             ip_addr = request.META['REMOTE_ADDR']
             ApiKey.objects.get(key=val, is_active=True, allowed_origins__icontains=ip_addr)
             return True
-        except ApiKey.DoesNotExist:
+        except (ApiKey.DoesNotExist, ValueError):
             return False
 
 
