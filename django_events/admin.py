@@ -9,7 +9,7 @@ admin.site.register(Source, SourceAdmin)
 
 
 class EventAdmin(admin.ModelAdmin):
-    list_display = ['id', 'source', 'initiator', 'target', 'type', 'params', 'timestamp']
+    list_display = ['id', 'source', 'initiator', 'target', 'kind', 'context', 'timestamp']
 
 admin.site.register(Event, EventAdmin)
 

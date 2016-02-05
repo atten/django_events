@@ -19,7 +19,7 @@ class Source(models.Model):
 
 
 class Event(models.Model):
-    EVENT_TYPES = (
+    EVENT_KINDS = (
         (0, _('Other')),
         (1, _('Change')),
         (2, _('Add')),
@@ -31,8 +31,8 @@ class Event(models.Model):
     source = models.ForeignKey(Source, related_name="events")
     initiator = models.ForeignKey(Source, related_name="events_initiated_by")
     target = models.ForeignKey(Source, related_name="events_targeted_to")
-    type = models.SmallIntegerField(choices=EVENT_TYPES)
-    params = JSONField(default=dict, blank=True)
+    kind = models.SmallIntegerField(choices=EVENT_KINDS)
+    context = JSONField(default=dict, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
