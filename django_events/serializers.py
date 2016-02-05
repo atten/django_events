@@ -5,10 +5,10 @@ from .models import *
 class SourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Source
-        fields = ('object_id', 'object_ct_id', 'name', 'project', 'app', 'created_at')
+        fields = ('name', 'label', 'object_id', 'object_ct_id', 'created_at')
 
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ('source', 'initiator', 'target', 'type', 'params', 'timestamp')
+        fields = ('source', 'initiator', 'target', 'kind', 'context', 'timestamp')
