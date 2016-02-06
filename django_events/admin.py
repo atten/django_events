@@ -3,7 +3,7 @@ from .models import *
 
 
 class SourceAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'label', 'object_id', 'object_ct_id', 'created_at']
+    list_display = ['id', 'app', 'object_id', 'object_ct_id', 'created_at']
 
 admin.site.register(Source, SourceAdmin)
 

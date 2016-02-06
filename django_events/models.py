@@ -5,8 +5,7 @@ import uuid
 
 
 class Source(models.Model):
-    name = models.CharField(max_length=100)
-    label = models.CharField(max_length=100)    # app.model
+    app = models.CharField(max_length=100, default="default")
     object_id = models.PositiveIntegerField(default=0)
     object_ct_id = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)

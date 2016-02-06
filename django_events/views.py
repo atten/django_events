@@ -1,4 +1,4 @@
-from rest_framework import viewsets, mixins, permissions, response
+from rest_framework import viewsets, mixins, permissions
 from .serializers import *
 from .models import *
 
@@ -14,16 +14,6 @@ class HasValidApiKeyOrAdmin(permissions.BasePermission):
             return True
         except (ApiKey.DoesNotExist, ValueError):
             return False
-
-
-class SourceViewSet(mixins.CreateModelMixin,
-                    mixins.RetrieveModelMixin,
-                    mixins.UpdateModelMixin,
-                    mixins.DestroyModelMixin,
-                    viewsets.GenericViewSet):
-    queryset = Source.objects.all()
-    serializer_class = SourceSerializer
-    permission_classes = (HasValidApiKeyOrAdmin,)
 
 
 class EventViewSet(mixins.CreateModelMixin,
