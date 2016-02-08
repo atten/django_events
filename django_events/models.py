@@ -8,12 +8,11 @@ class Source(models.Model):
     app = models.CharField(max_length=100, default="default")
     object_id = models.PositiveIntegerField(default=0)
     object_ct_id = models.PositiveIntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
     # header_template = models.TextField(max_length=50)
     # body_template = models.TextField(max_length=50)
 
-    # def __str__(self):
-    #     return "Source '%s' <%s:%d>" % (self.name, self.label, self.object_id)
+    def __str__(self):
+        return "Source %s:%d" % (self.object_ct_id, self.object_id)
 
 
 class Event(models.Model):
@@ -35,6 +34,9 @@ class Event(models.Model):
 
     # def __str__(self):
     #     return 'Event:%d' % self.id
+
+    class Meta:
+        unique_together = (('source', 'initiator', 'target'),)      # not working: source with equal fields will be created anyway (why?) :(
 
 
 class ApiKey(models.Model):
