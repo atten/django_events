@@ -12,6 +12,11 @@ class SourceField(serializers.RelatedField):
     def to_internal_value(self, data):
         ct_id, id = data.split(':')
         kwargs = {'object_id': id, 'object_ct_id': ct_id}
+
+        request = self.context['request']
+        if hasattr(request, 'app'):
+            kwargs['app'] = request.app
+
         try:
             return self.get_queryset().get(**kwargs)
         except ObjectDoesNotExist:
@@ -20,7 +25,7 @@ class SourceField(serializers.RelatedField):
 
 class EventSerializer(serializers.ModelSerializer):
     source = SourceField()
-    target = SourceField()
+    target = SourceField(required=False, allow_null=True, default=None)
     initiator = SourceField()
 
     class Meta:

@@ -10,7 +10,8 @@ class HasValidApiKeyOrAdmin(permissions.BasePermission):
         try:
             val = request.GET.get('api_key') or request.data.get('api_key')
             ip_addr = request.META['REMOTE_ADDR']
-            ApiKey.objects.get(key=val, is_active=True, allowed_origins__icontains=ip_addr)
+            app = ApiKey.objects.get(key=val, is_active=True, allowed_origins__icontains=ip_addr).app
+            request.app = app       # put found app to request (will be extracted in EventSerializer and EventViewSet)
             return True
         except (ApiKey.DoesNotExist, ValueError):
             return False
@@ -25,19 +26,23 @@ class EventViewSet(mixins.CreateModelMixin,
     permission_classes = (HasValidApiKeyOrAdmin,)
 
     def get_queryset(self):
-        queryset = Event.objects.all()
-        d = self.request.query_params
+        queryset = self.queryset
 
-        source = d.get('source')
-        if source is not None:
-            queryset = queryset.filter(source=source)
+        if hasattr(self.request, 'app'):
+            queryset = queryset.filter(source__app=self.request.app)
 
-        initiator = d.get('initiator')
-        if initiator is not None:
-            queryset = queryset.filter(initiator=initiator)
-
-        target = d.get('target')
-        if target is not None:
-            queryset = queryset.filter(target=target)
+        # d = self.request.query_params
+        #
+        # source = d.get('source')
+        # if source is not None:
+        #     queryset = queryset.filter(source=source)
+        #
+        # initiator = d.get('initiator')
+        # if initiator is not None:
+        #     queryset = queryset.filter(initiator=initiator)
+        #
+        # target = d.get('target')
+        # if target is not None:
+        #     queryset = queryset.filter(target=target)
 
         return queryset
