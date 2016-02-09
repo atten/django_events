@@ -6,16 +6,15 @@ import uuid
 
 class Source(models.Model):
     app = models.CharField(max_length=100, default="default")
-    object_id = models.PositiveIntegerField()
-    object_ct_id = models.PositiveIntegerField()
+    content_type = models.PositiveIntegerField()
     # header_template = models.TextField(max_length=50)
     # body_template = models.TextField(max_length=50)
 
     class Meta:
-        unique_together = (('app', 'object_id', 'object_ct_id'),)
+        unique_together = (('app', 'content_type'),)
 
     def __str__(self):
-        return "Source %s:%d" % (self.object_ct_id, self.object_id)
+        return "Source %s:%d" % (self.app, self.content_type)
 
 
 class Event(models.Model):
@@ -34,6 +33,9 @@ class Event(models.Model):
     kind = models.SmallIntegerField(choices=EVENT_KINDS)
     context = JSONField(default=dict, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-timestamp']
 
     # def __str__(self):
     #     return 'Event:%d' % self.id

@@ -7,11 +7,10 @@ class SourceField(serializers.RelatedField):
     queryset = Source.objects.all()
 
     def to_representation(self, value):
-        return '%s:%s' % (value.object_ct_id, value.object_id)
+        return value.content_type
 
     def to_internal_value(self, data):
-        ct_id, id = data.split(':')
-        kwargs = {'object_id': id, 'object_ct_id': ct_id}
+        kwargs = {'content_type': data}
 
         request = self.context['request']
         if hasattr(request, 'app'):
