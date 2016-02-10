@@ -29,4 +29,4 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ('source', 'initiator', 'target', 'kind', 'context', 'timestamp')
+        fields = ('source', 'initiator', 'target', 'kind', 'scope', 'context', 'timestamp')

@@ -31,6 +31,7 @@ class Event(models.Model):
     initiator = models.ForeignKey(Source, related_name="events_initiated_by")
     target = models.ForeignKey(Source, related_name="events_targeted_to", blank=True, null=True)
     kind = models.SmallIntegerField(choices=EVENT_KINDS)
+    scope = models.CharField(max_length=100, blank=True)
     context = JSONField(default=dict, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
