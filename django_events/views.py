@@ -24,6 +24,7 @@ class EventViewSet(mixins.CreateModelMixin,
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes = (HasValidApiKeyOrAdmin,)
+    filter_fields = ('scope',)
 
     def get_queryset(self):
         queryset = self.queryset
