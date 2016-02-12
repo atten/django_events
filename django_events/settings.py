@@ -125,7 +125,7 @@ WSGI_APPLICATION = 'django_events.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'events_marfa_dev',
+        'NAME': 'django_events',
         'USER': '',
         'HOST': '',
         'PORT': '',

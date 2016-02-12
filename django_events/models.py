@@ -7,8 +7,6 @@ import uuid
 class Source(models.Model):
     app = models.CharField(max_length=100, default="default")
     content_type = models.PositiveIntegerField()
-    # header_template = models.TextField(max_length=50)
-    # body_template = models.TextField(max_length=50)
 
     class Meta:
         unique_together = (('app', 'content_type'),)
