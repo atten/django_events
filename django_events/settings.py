@@ -51,7 +51,7 @@ from .secret_settings import *
 HOSTNAME = socket.gethostname()
 RELEASE_HOSTS = [
     'hatebase',
-    # 'haterelay',
+    'burble',
 ]
 
 ALLOWED_HOSTS = [
@@ -63,17 +63,23 @@ if HOSTNAME in RELEASE_HOSTS:
     DEBUG = False
 
 
-INSTALLED_APPS = [
+DEBUG_APPS = [
     'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 'django.contrib.sites',
+]
+
+INSTALLED_APPS = [
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
     'rest_framework',
     'django_events',
 ]
+
+if DEBUG:
+    INSTALLED_APPS = DEBUG_APPS + INSTALLED_APPS
 
 
 MIDDLEWARE_CLASSES = [
@@ -98,7 +104,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [__TEMPLATE_DIR],
-        #'APP_DIRS': True,
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.contrib.auth.context_processors.auth',
@@ -110,11 +116,6 @@ TEMPLATES = [
                 'django.template.context_processors.csrf',
                 'django.template.context_processors.tz',
                 'django.template.context_processors.static',
-            ],
-            'loaders': [
-                'django.template.loaders.filesystem.Loader',
-                'django.template.loaders.app_directories.Loader',
-                'django.template.loaders.eggs.Loader',
             ],
         },
     },
