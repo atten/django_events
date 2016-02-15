@@ -43,10 +43,10 @@ class Event(models.Model):
 class ApiKey(models.Model):
     key = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     label = models.CharField(max_length=100, blank=True, null=True)
-    app = models.CharField(max_length=100, blank=True, null=True)
+    app = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    allowed_origins = models.TextField(blank=True, default='127.0.0.1', help_text=_('List of IP addresses'))
+    # allowed_origins = models.TextField(blank=True, default='127.0.0.1', help_text=_('List of IP addresses'))
 
     # def get_audit_log_data(self):
     #     return {

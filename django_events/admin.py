@@ -15,6 +15,6 @@ admin.site.register(Event, EventAdmin)
 
 
 class ApiKeyAdmin(admin.ModelAdmin):
-    list_display = ['key', 'app', 'label', 'is_active', 'created_at', 'allowed_origins']
+    list_display = ['key', 'app', 'label', 'is_active', 'created_at']
 
 admin.site.register(ApiKey, ApiKeyAdmin)

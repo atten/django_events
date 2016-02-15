@@ -6,7 +6,6 @@ from django.core.urlresolvers import reverse_lazy
 gettext = lambda s: s
 
 DEBUG = True
-DEBUG = False
 
 # PATHS
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -51,45 +50,33 @@ from .secret_settings import *
 HOSTNAME = socket.gethostname()
 RELEASE_HOSTS = [
     'hatebase',
-    #'burble',
+    # 'burble',
 ]
 
 ALLOWED_HOSTS = [
     HOSTNAME,
     '127.0.0.1',
-    'events.etc-marfa.ru',
 ]
 
 if HOSTNAME in RELEASE_HOSTS:
     DEBUG = False
 
 
-DEBUG_APPS = [
-    'django.contrib.admin',
+INSTALLED_APPS = [
+    'django.contrib.contenttypes',
+    'django.contrib.auth',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.admin',
     # 'django.contrib.sites',
-]
-
-INSTALLED_APPS = [
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
     'rest_framework',
-    'django.contrib.staticfiles',
     'django_events',
-    'raven.contrib.django.raven_compat',
 ]
 
-if DEBUG:
-    INSTALLED_APPS = DEBUG_APPS + INSTALLED_APPS
-
-
+# if not DEBUG:
 import raven
-
-RAVEN_CONFIG = {
-    'dsn': 'https://7b0a3211f4d74170a7c7442b6b19971a:cc6fef3139654a8ab3be447119e8b47a@sentry.force.fm/6',
-}
+INSTALLED_APPS += ('raven.contrib.django.raven_compat',)
 
 
 MIDDLEWARE_CLASSES = [
@@ -180,6 +167,9 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'DEFAULT_FILTER_BACKENDS': ('url_filter.integrations.drf.DjangoFilterBackend',)
 }
+
+#if not DEBUG:       # disable BrowsableAPIRenderer
+REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = ('rest_framework.renderers.JSONRenderer',)
 
 
 # REDEFINE
