@@ -50,12 +50,13 @@ from .secret_settings import *
 HOSTNAME = socket.gethostname()
 RELEASE_HOSTS = [
     'hatebase',
-    # 'burble',
+    'burble',
 ]
 
 ALLOWED_HOSTS = [
     HOSTNAME,
     '127.0.0.1',
+    'events.etc-marfa.ru',
 ]
 
 if HOSTNAME in RELEASE_HOSTS:
@@ -71,7 +72,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     # 'django.contrib.sites',
     'rest_framework',
-    'django_events',
+    'events',
 ]
 
 # if not DEBUG:
@@ -168,8 +169,8 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('url_filter.integrations.drf.DjangoFilterBackend',)
 }
 
-#if not DEBUG:       # disable BrowsableAPIRenderer
-REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = ('rest_framework.renderers.JSONRenderer',)
+if not DEBUG:       # disable BrowsableAPIRenderer
+    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = ('rest_framework.renderers.JSONRenderer',)
 
 
 # REDEFINE
