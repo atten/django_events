@@ -10,7 +10,8 @@ class HasValidApiKeyOrAdmin(permissions.BasePermission):
         try:
             val = request.GET.get('api_key') or request.data.get('api_key')
             ip_addr = request.META['REMOTE_ADDR']
-            app = ApiKey.objects.get(key=val, is_active=True, allowed_origins__icontains=ip_addr).app
+            print(ip_addr)
+            app = ApiKey.objects.get(key=val, is_active=True).app
             request.app = app       # put found app to request (will be extracted in EventSerializer and EventViewSet)
             return True
         except (ApiKey.DoesNotExist, ValueError):

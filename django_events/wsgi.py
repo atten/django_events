@@ -1,5 +1,5 @@
 """
-WSGI config for django_events project.
+WSGI config for events project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

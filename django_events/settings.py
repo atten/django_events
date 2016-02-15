@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse_lazy
 gettext = lambda s: s
 
 DEBUG = True
-
+DEBUG = False
 
 # PATHS
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -51,12 +51,13 @@ from .secret_settings import *
 HOSTNAME = socket.gethostname()
 RELEASE_HOSTS = [
     'hatebase',
-    'burble',
+    #'burble',
 ]
 
 ALLOWED_HOSTS = [
     HOSTNAME,
     '127.0.0.1',
+    'events.etc-marfa.ru',
 ]
 
 if HOSTNAME in RELEASE_HOSTS:
@@ -75,11 +76,20 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'rest_framework',
+    'django.contrib.staticfiles',
     'django_events',
+    'raven.contrib.django.raven_compat',
 ]
 
 if DEBUG:
     INSTALLED_APPS = DEBUG_APPS + INSTALLED_APPS
+
+
+import raven
+
+RAVEN_CONFIG = {
+    'dsn': 'https://7b0a3211f4d74170a7c7442b6b19971a:cc6fef3139654a8ab3be447119e8b47a@sentry.force.fm/6',
+}
 
 
 MIDDLEWARE_CLASSES = [
