@@ -1,3 +1,4 @@
+import json
 from rest_framework import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from .models import *
@@ -22,10 +23,23 @@ class SourceField(serializers.RelatedField):
             return Source.objects.create(**kwargs)
 
 
+class JsonField(serializers.JSONField):
+    def to_representation(self, value):
+        return value
+
+    def to_internal_value(self, data):
+        try:
+            val = json.loads(data)
+        except TypeError:
+            raise serializers.ValidationError("Could not load json <{}>".format(data))
+        return val
+
+
 class EventSerializer(serializers.ModelSerializer):
     source = SourceField()
     target = SourceField(required=False, allow_null=True, default=None)
     initiator = SourceField()
+    context = JsonField()
 
     class Meta:
         model = Event
