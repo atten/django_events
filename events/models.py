@@ -23,6 +23,8 @@ class Event(models.Model):
         (3, _('Remove')),
         (4, _('Clear')),
         (5, _('Reset')),
+        (6, _('Assign')),
+        (7, _('Dismiss')),
     )
 
     source = models.ForeignKey(Source, related_name="events")
