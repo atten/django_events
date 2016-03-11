@@ -1,0 +1,15 @@
+su - postgres
+psql
+CREATE USER events;
+CREATE DATABASE django_events OWNER events;
+
+virtualenv events --python=python3
+cd events/
+git clone https://github.com/atten/django_events.git
+source bin/activate
+cd django_events
+pip install -r requirements.txt
+
+./manage.py makemigrations events
+./manage.py migrate
+./manage.py createsuperuser

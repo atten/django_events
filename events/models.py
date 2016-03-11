@@ -49,10 +49,3 @@ class ApiKey(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     # allowed_origins = models.TextField(blank=True, default='127.0.0.1', help_text=_('List of IP addresses'))
-
-    # def get_audit_log_data(self):
-    #     return {
-    #         'label': self.label,
-    #         'key': self.key,
-    #         'is_active': self.is_active,
-    #     }
