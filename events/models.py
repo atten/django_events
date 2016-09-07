@@ -1,37 +1,10 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
-from django.utils.translation import ugettext_lazy as _
 import uuid
 
 
-class Source(models.Model):
-    app = models.CharField(max_length=100, default="default")
-    content_type = models.PositiveIntegerField()
-
-    class Meta:
-        unique_together = (('app', 'content_type'),)
-
-    def __str__(self):
-        return "Source %s:%d" % (self.app, self.content_type)
-
-
 class Event(models.Model):
-    EVENT_KINDS = (
-        (0, _('Other')),
-        (1, _('Create')),
-        (2, _('Change')),
-        (3, _('Remove')),
-        (4, _('Clear')),
-        (5, _('Reset')),
-        (6, _('Assign')),
-        (7, _('Dismiss')),
-    )
-
-    source = models.ForeignKey(Source, related_name="events")
-    initiator = models.ForeignKey(Source, related_name="events_initiated_by")
-    target = models.ForeignKey(Source, related_name="events_targeted_to", blank=True, null=True)
-    kind = models.SmallIntegerField(choices=EVENT_KINDS)
-    scope = models.CharField(max_length=100, blank=True)
+    app = models.CharField(max_length=100)
     context = JSONField(default=dict, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -44,8 +17,7 @@ class Event(models.Model):
 
 class ApiKey(models.Model):
     key = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
-    label = models.CharField(max_length=100, blank=True, null=True)
-    app = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    app = models.CharField(max_length=100)
     # allowed_origins = models.TextField(blank=True, default='127.0.0.1', help_text=_('List of IP addresses'))

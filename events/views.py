@@ -1,34 +1,40 @@
-from rest_framework import viewsets, mixins, permissions
-from .serializers import *
-from .models import *
+from rest_framework import viewsets, mixins
+from rest_framework.serializers import ModelSerializer
+
+from . import serializers
+from .models import Event
 
 
-class HasValidApiKeyOrAdmin(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.user and request.user.is_staff:
-            return True
-        try:
-            val = request.GET.get('api_key') or request.data.get('api_key')
-            app = ApiKey.objects.get(key=val, is_active=True).app
-            request.app = app       # put found app to request (will be extracted in EventSerializer and EventViewSet)
-            return True
-        except (ApiKey.DoesNotExist, ValueError):
-            return False
+class SafeModelSerializerMixIn(object):
+    def get_serializer_class(self):
+        if self.action in ('create', 'update', 'partial_update'):
+            orig_model = self.serializer_class.Meta.model
+
+            class CreateInstanceSerializer(ModelSerializer):
+                class Meta:
+                    model = orig_model
+
+            return CreateInstanceSerializer
+
+        return self.serializer_class
 
 
 class EventViewSet(mixins.CreateModelMixin,
                    mixins.RetrieveModelMixin,
                    mixins.ListModelMixin,
+                   SafeModelSerializerMixIn,
                    viewsets.GenericViewSet):
     queryset = Event.objects.all()
-    serializer_class = EventSerializer
-    permission_classes = (HasValidApiKeyOrAdmin,)
-    filter_fields = ('scope',)
+    serializer_class = serializers.EventSerializer
+    filter_fields = ('context', 'timestamp')
+
+    def create(self, request, *args, **kwargs):
+        request.data['app'] = request.app
+        return super().create(request, *args, **kwargs)
 
     def get_queryset(self):
         queryset = self.queryset
-
         if hasattr(self.request, 'app'):
-            queryset = queryset.filter(source__app=self.request.app)
+            queryset = queryset.filter(app=self.request.app)
 
         return queryset
