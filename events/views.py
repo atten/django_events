@@ -37,4 +37,8 @@ class EventViewSet(mixins.CreateModelMixin,
         if hasattr(self.request, 'app'):
             queryset = queryset.filter(app=self.request.app)
 
+        scope = self.request.GET.get('context__scope__in')
+        if scope:
+            queryset = queryset.filter(context__scope=scope)
+
         return queryset
