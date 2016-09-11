@@ -57,6 +57,7 @@ ALLOWED_HOSTS = [
     HOSTNAME,
     '127.0.0.1',
     'events.etc-marfa.ru',
+    'events.marfa.team',
 ]
 
 if HOSTNAME in RELEASE_HOSTS:
