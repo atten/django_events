@@ -1,6 +1,8 @@
 from rest_framework import viewsets, mixins
 from rest_framework.serializers import ModelSerializer
 
+from django.db.models import Q
+
 from . import serializers
 from .models import Event
 
@@ -37,8 +39,10 @@ class EventViewSet(mixins.CreateModelMixin,
         if hasattr(self.request, 'app'):
             queryset = queryset.filter(app=self.request.app)
 
-        scope = self.request.GET.get('context__scope__in')
-        if scope:
-            queryset = queryset.filter(context__scope=scope)
+        scopes = self.request.GET.get('scope').split(',')
+        qu = Q()
+        for scope in scopes:
+            qu |= Q(context__scope=scope)
+        queryset = queryset.filter(qu)
 
         return queryset
