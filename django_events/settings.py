@@ -67,13 +67,15 @@ if HOSTNAME in RELEASE_HOSTS:
 INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.auth',
-    # 'django.contrib.sessions',
-    # 'django.contrib.messages',
-    # 'django.contrib.staticfiles',
-    # 'django.contrib.admin',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django.contrib.admin',
     # 'django.contrib.sites',
     'rest_framework',
     'events',
+    'notifications',
+    'django_congen',
 ]
 
 if not DEBUG:
@@ -82,15 +84,15 @@ if not DEBUG:
 
 
 MIDDLEWARE_CLASSES = [
-    # 'django.middleware.security.SecurityMiddleware',
-    # 'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    # 'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
-    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-    # 'django.contrib.messages.middleware.MessageMiddleware',
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 STATICFILES_FINDERS = (
@@ -135,16 +137,18 @@ DATABASES = {
 }
 
 
-LANGUAGE_CODE = 'ru'
-LANGUAGES = (
-    ('en', gettext('en')),
-    ('ru', gettext('ru')),
-)
-
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+LOCALE_PATHS = (
+    os.path.abspath(os.path.join(ROOT_PATH, 'locale')),
+)
+# LANGUAGE_CODE = 'ru'
+LANGUAGES = (
+    ('en', 'en'),
+    ('ru', 'ru'),
+)
 
 
 # BATTERIES
