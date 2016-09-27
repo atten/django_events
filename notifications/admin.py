@@ -3,7 +3,7 @@ from .models import *
 
 
 class DestinationAdmin(admin.ModelAdmin):
-    list_display = ['id', 'app', 'mailer_api_url', 'mailer_api_key', 'cas_api_requisites_url', 'cas_api_key']
+    list_display = ['id', 'app', 'mailer_api_url', 'mailer_api_key', 'cas_profile_url', 'cas_api_key']
 
 admin.site.register(Destination, DestinationAdmin)
 

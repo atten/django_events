@@ -1,15 +1,18 @@
 import requests
 import json
 from furl import furl
+from pytz import timezone as pytz_timezone
 
 from django.db import models
 from django.db.models import Q
 from django.contrib.postgres.fields import JSONField
+from django.utils import translation, timezone
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.core.cache import cache
 
 from events.models import Event
-from events.serializers import EventSerializer
+from events.serializers import LocalizedEventSerializer
 from . import validators
 from .mailer import DBMailerAPI, EmailSendError
 
@@ -18,10 +21,10 @@ class Destination(models.Model):
     app = models.CharField(max_length=100, unique=True)
     mailer_api_url = models.URLField(max_length=255)
     mailer_api_key = models.CharField(max_length=255)
-    cas_api_requisites_url = models.URLField(max_length=255,
-                                             validators=[validators.validate_integer_placeholder],
-                                             help_text="e.g. http://example.com/api/v1/profile/%d/. "
-                                                       "'%d' is required for substitute user_id.")
+    cas_profile_url = models.URLField(max_length=255,
+                                      validators=[validators.validate_integer_placeholder],
+                                      help_text="e.g. http://example.com/api/v1/profile/%d/. "
+                                                "'%d' is required for substitute user_id.")
     cas_api_key = models.CharField(max_length=255)
     comment = models.CharField(max_length=100, blank=True, null=True)
 
@@ -162,9 +165,10 @@ class Notify(models.Model):
         unique_together = ('trigger', 'receiver_path')
 
     def __str__(self):
-        return 'Notify #%d: "%s" for "%s"' % (self.id,
-                                              self.trigger.comment or self.trigger,
-                                              self.receiver_path.comment or self.receiver_path)
+        return '%s #%d: "%s" -> "%s"' % (self._meta.verbose_name,
+                                         self.id,
+                                         self.trigger.comment or self.trigger,
+                                         self.receiver_path.comment or self.receiver_path)
 
     def get_options_for_user(self, user_id):
         """выбираем все кастомные способы оповещения для указанного юзера + способы по умолчанию,
@@ -202,16 +206,29 @@ class Notify(models.Model):
         app = events[0].app
         dst = Destination.objects.get(app=app)
 
-        cas_url = furl(dst.cas_api_requisites_url % receiver_id)
-        cas_url.args['api_key'] = dst.cas_api_key
-        cas_url = cas_url.url
-        profile_responce = requests.get(cas_url)
-        if profile_responce.status_code != 200:
-            print('Warning: "%s" returns %d.' % (cas_url, profile_responce.status_code))
-            return
+        profile_cache_key = dst.cas_profile_url % receiver_id
+        cached_profile = cache.get(profile_cache_key)
+
         try:
-            profile = json.loads(profile_responce.text)
+            if not cached_profile:
+                cas_url = furl(dst.cas_profile_url % receiver_id)
+                cas_url.args['api_key'] = dst.cas_api_key
+                cas_url = cas_url.url
+                profile_responce = requests.get(cas_url)
+                if profile_responce.status_code != 200:
+                    print('Warning: "%s" returns %d.' % (cas_url, profile_responce.status_code))
+                    return
+                profile = json.loads(profile_responce.text)
+                cache.set(profile_cache_key, profile, 10)  # кладём загруженный профиль в кэш на 10с
+            else:
+                profile = cached_profile
+
             language = profile.get('language')
+            tz = pytz_timezone(profile.get('tz_name'))
+
+            translation.activate(language)
+            timezone.activate(tz)
+
             if method == 'email':
                 email = profile.get('notification_email')
                 if not email:
@@ -220,12 +237,12 @@ class Notify(models.Model):
                 single = len(events) is 1
 
                 slug = self.template_slug if single else self.template_slug_mult
-                slug %= language or 'en'
+                slug %= language
 
                 if single:
-                    context = EventSerializer(events[0]).data
+                    context = LocalizedEventSerializer(events[0]).data
                 else:
-                    context = EventSerializer(events[:5], many=True).data  # помещаем в контекст макс. 5 событий
+                    context = LocalizedEventSerializer(events[:5], many=True).data  # помещаем в контекст макс. 5 событий
 
                 mailer = DBMailerAPI(dst.mailer_api_key, dst.mailer_api_url)
                 mailer.send(slug, email, context)
@@ -235,6 +252,10 @@ class Notify(models.Model):
 
         except EmailSendError:
             print('Warning: email to "%s" was not send.' % email)
+
+        finally:
+            translation.deactivate()
+            timezone.deactivate()
 
 
 class NotifyOptionsMixIn(models.Model):

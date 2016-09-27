@@ -3,6 +3,8 @@ djangorestframework
 django-url-filter
 furl
 psycopg2
+python-memcached
 gunicorn
+pytz
 raven
 requests

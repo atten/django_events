@@ -1,0 +1,188 @@
+[
+{
+  "model": "notifications.eventtrigger",
+  "pk": 1,
+  "fields": {
+    "app": "marfa",
+    "lookup_kwargs": {
+      "context__kind": "create-interval",
+      "context__interval_kind": "manager"
+    },
+    "comment": "\u041c\u0435\u043d\u0435\u0434\u0436\u0435\u0440 \u0432\u044b\u0434\u0435\u043b\u0438\u043b \u0432\u0440\u0435\u043c\u044f \u0440\u0435\u0441\u0443\u0440\u0441\u0430 \u043f\u043e\u0434 \u0441\u0435\u0431\u044f"
+  }
+},
+{
+  "model": "notifications.eventtrigger",
+  "pk": 2,
+  "fields": {
+    "app": "marfa",
+    "lookup_kwargs": {
+      "context__kind": "delete-interval",
+      "context__interval_kind": "manager"
+    },
+    "comment": "\u041c\u0435\u043d\u0435\u0434\u0436\u0435\u0440 \u043e\u0441\u0432\u043e\u0431\u043e\u0434\u0438\u043b \u0440\u0435\u0437\u0435\u0440\u0432 \u0432\u0440\u0435\u043c\u0435\u043d\u0438 \u0440\u0435\u0441\u0443\u0440\u0441\u0430"
+  }
+},
+{
+  "model": "notifications.eventtrigger",
+  "pk": 3,
+  "fields": {
+    "app": "marfa",
+    "lookup_kwargs": {
+      "context__kind": "apply-schedule"
+    },
+    "comment": "\u0420\u0435\u0441\u0443\u0440\u0441\u0443 \u043d\u0430\u0437\u043d\u0430\u0447\u0435\u043d \u0433\u0440\u0430\u0444\u0438\u043a \u0440\u0430\u0431\u043e\u0442\u044b"
+  }
+},
+{
+  "model": "notifications.eventtrigger",
+  "pk": 4,
+  "fields": {
+    "app": "marfa",
+    "lookup_kwargs": {
+      "context__kind": "add-unavailable-interval"
+    },
+    "comment": "\u0412\u0440\u0435\u043c\u044f \u0440\u0435\u0441\u0443\u0440\u0441\u0430 \u043e\u0442\u043c\u0435\u0447\u0435\u043d\u043e \u043d\u0435\u0440\u0430\u0431\u043e\u0447\u0438\u043c"
+  }
+},
+{
+  "model": "notifications.eventtrigger",
+  "pk": 5,
+  "fields": {
+    "app": "marfa",
+    "lookup_kwargs": {
+      "context__kind": "clear-unavailable-interval"
+    },
+    "comment": "\u0412\u0440\u0435\u043c\u044f \u0440\u0435\u0441\u0443\u0440\u0441\u0430 \u043e\u0442\u043c\u0435\u0447\u0435\u043d\u043e \u0440\u0430\u0431\u043e\u0447\u0438\u043c"
+  }
+},
+{
+  "model": "notifications.eventreceiverpath",
+  "pk": 1,
+  "fields": {
+    "path": "context.resource.id",
+    "comment": "\u0420\u0435\u0441\u0443\u0440\u0441"
+  }
+},
+{
+  "model": "notifications.eventreceiverpath",
+  "pk": 2,
+  "fields": {
+    "path": "context.manager.id",
+    "comment": "\u041c\u0435\u043d\u0435\u0434\u0436\u0435\u0440"
+  }
+},
+{
+  "model": "notifications.notifytimeoptions",
+  "pk": 6,
+  "fields": {
+    "kind": 0,
+    "time": null,
+    "day": null
+  }
+},
+{
+  "model": "notifications.notifytimeoptions",
+  "pk": 7,
+  "fields": {
+    "kind": 1,
+    "time": "00:15:00",
+    "day": null
+  }
+},
+{
+  "model": "notifications.notify",
+  "pk": 1,
+  "fields": {
+    "trigger": 1,
+    "receiver_path": 1,
+    "template_slug": "marfa-your-time-reserved-by-manager-%s",
+    "template_slug_mult": "manager-reserved-resource-mult[%s]"
+  }
+},
+{
+  "model": "notifications.notify",
+  "pk": 2,
+  "fields": {
+    "trigger": 2,
+    "receiver_path": 1,
+    "template_slug": "marfa-your-time-liberated-by-manager-%s",
+    "template_slug_mult": "marfa-your-time-liberated-by-manager-%s-mult"
+  }
+},
+{
+  "model": "notifications.notify",
+  "pk": 3,
+  "fields": {
+    "trigger": 3,
+    "receiver_path": 1,
+    "template_slug": "marfa-schedule-updated-%s",
+    "template_slug_mult": "marfa-rcalendar-apply-schedule-%s-mult"
+  }
+},
+{
+  "model": "notifications.notify",
+  "pk": 4,
+  "fields": {
+    "trigger": 4,
+    "receiver_path": 2,
+    "template_slug": "add-unavailable-interval-%s",
+    "template_slug_mult": "add-unavailable-interval-%s-mult"
+  }
+},
+{
+  "model": "notifications.notify",
+  "pk": 5,
+  "fields": {
+    "trigger": 5,
+    "receiver_path": 2,
+    "template_slug": "clear-unavailable-interval-%s",
+    "template_slug_mult": "clear-unavailable-interval-%s-mult"
+  }
+},
+{
+  "model": "notifications.defaultnotifyoptions",
+  "pk": 1,
+  "fields": {
+    "when": 6,
+    "method": "email",
+    "base": 1
+  }
+},
+{
+  "model": "notifications.defaultnotifyoptions",
+  "pk": 2,
+  "fields": {
+    "when": 6,
+    "method": "email",
+    "base": 2
+  }
+},
+{
+  "model": "notifications.defaultnotifyoptions",
+  "pk": 3,
+  "fields": {
+    "when": 6,
+    "method": "email",
+    "base": 3
+  }
+},
+{
+  "model": "notifications.defaultnotifyoptions",
+  "pk": 4,
+  "fields": {
+    "when": 6,
+    "method": "email",
+    "base": 4
+  }
+},
+{
+  "model": "notifications.defaultnotifyoptions",
+  "pk": 5,
+  "fields": {
+    "when": 6,
+    "method": "email",
+    "base": 5
+  }
+}
+]
