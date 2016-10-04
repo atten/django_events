@@ -49,6 +49,7 @@ from .secret_settings import *
 # HOSTS
 HOSTNAME = socket.gethostname()
 RELEASE_HOSTS = [
+    'primary',
     'hatebase',
     'burble',
 ]
@@ -56,7 +57,7 @@ RELEASE_HOSTS = [
 ALLOWED_HOSTS = [
     HOSTNAME,
     '127.0.0.1',
-    'events.etc-marfa.ru',
+    'events-dev'
     'events.marfa.team',
 ]
 
