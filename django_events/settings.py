@@ -57,7 +57,7 @@ RELEASE_HOSTS = [
 ALLOWED_HOSTS = [
     HOSTNAME,
     '127.0.0.1',
-    'events-dev'
+    'events-dev',
     'events.marfa.team',
 ]
 
@@ -74,6 +74,9 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     # 'django.contrib.sites',
     'rest_framework',
+    'django_cas_ng',
+    'garbage',
+
     'events',
     'notifications',
     'django_congen',
@@ -84,7 +87,7 @@ if not DEBUG:
     INSTALLED_APPS += ('raven.contrib.django.raven_compat',)
 
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -169,6 +172,9 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'DEFAULT_FILTER_BACKENDS': ('url_filter.integrations.drf.DjangoFilterBackend',)
 }
+
+GARBAGE_USE_CAS = True
+GARBAGE_CAS_ADMINS_ONLY = True
 
 
 # REDEFINE
