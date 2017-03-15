@@ -4,6 +4,7 @@ import uuid
 
 
 class Event(models.Model):
+    """Модель пользовательского события."""
     app = models.CharField(max_length=100)
     context = JSONField(default=dict, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -16,6 +17,7 @@ class Event(models.Model):
 
 
 class ApiKey(models.Model):
+    """Api-ключ для доступа к микросервису."""
     key = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

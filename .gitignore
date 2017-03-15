@@ -10,6 +10,10 @@ static/*
 # Translations
 *.mo
 
+# Sphinx built documentation
+docs/_build/
+docs/api_docs.md
+
 # Files
 local_settings.py
 secret_settings.py
