@@ -1,15 +1,15 @@
-import requests
 import json
-from furl import furl
-from pytz import timezone as pytz_timezone
 
+import requests
+from django.contrib.postgres.fields import JSONField
+from django.core.cache import cache
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
-from django.contrib.postgres.fields import JSONField
 from django.utils import translation, timezone
 from django.utils.translation import ugettext_lazy as _
-from django.core.exceptions import ValidationError
-from django.core.cache import cache
+from furl import furl
+from pytz import timezone as pytz_timezone
 
 from events.models import Event
 from events.serializers import LocalizedEventSerializer
@@ -138,10 +138,10 @@ class NotifyTimeOptions(models.Model):
                                                NotifyTimeOptions.Kind_Monthly):
             raise ValidationError('time', _('This field is required for specified kind.'))
 
-        if self.kind is NotifyTimeOptions.Kind_Weekly and self.day not in range(0,7):
+        if self.kind is NotifyTimeOptions.Kind_Weekly and self.day not in range(0, 7):
             raise ValidationError('day', _('Input day of week from 0 to 6 (0 is Sunday).'))
 
-        if self.kind is NotifyTimeOptions.Kind_Monthly and self.day not in range(1,28):
+        if self.kind is NotifyTimeOptions.Kind_Monthly and self.day not in range(1, 28):
             raise ValidationError('day', _('Input day from 1 to 28.'))
 
         super().save(**kwargs)
@@ -242,7 +242,8 @@ class Notify(models.Model):
                 if single:
                     context = LocalizedEventSerializer(events[0]).data
                 else:
-                    context = LocalizedEventSerializer(events[:5], many=True).data  # помещаем в контекст макс. 5 событий
+                    context = LocalizedEventSerializer(events[:5],
+                                                       many=True).data  # помещаем в контекст макс. 5 событий
 
                 mailer = DBMailerAPI(dst.mailer_api_key, dst.mailer_api_url)
                 mailer.send(slug, email, context)

@@ -1,34 +1,25 @@
-from rest_framework import viewsets, mixins
-from rest_framework.serializers import ModelSerializer
-
 from django.db.models import Q
+from rest_framework import viewsets, mixins
 
+from events.serializers import MultiSerializerViewSetMixin
 from . import serializers
 from .models import Event
 
 
-class SafeModelSerializerMixIn:
-    def get_serializer_class(self):
-        if self.action in ('create', 'update', 'partial_update'):
-            orig_model = self.serializer_class.Meta.model
-
-            class CreateInstanceSerializer(ModelSerializer):    # TODO: убрать
-                class Meta:
-                    model = orig_model
-                    fields = '__all__'
-
-            return CreateInstanceSerializer
-
-        return self.serializer_class
-
-
-class EventViewSet(mixins.CreateModelMixin,
+class EventViewSet(MultiSerializerViewSetMixin,
+                   mixins.CreateModelMixin,
                    mixins.RetrieveModelMixin,
                    mixins.ListModelMixin,
-                   SafeModelSerializerMixIn,
                    viewsets.GenericViewSet):
     queryset = Event.objects.all()
+
     serializer_class = serializers.EventSerializer
+    serializer_action_classes = {
+        'create': serializers.FullEventSerializer,
+        'update': serializers.FullEventSerializer,
+        'partial_update': serializers.FullEventSerializer,
+    }
+
     filter_fields = ('context', 'timestamp')
 
     def create(self, request, *args, **kwargs):

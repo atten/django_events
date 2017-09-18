@@ -1,5 +1,5 @@
-import socket
 import os
+import socket
 
 from django.core.urlresolvers import reverse_lazy
 
@@ -26,7 +26,6 @@ MEDIA_URL = '/media/'
 LOCAL_SETTINGS_FILE = os.path.join(BASE_DIR, PROJECT_NAME, 'local_settings.py')
 SECRET_SETTINGS_FILE = os.path.join(BASE_DIR, PROJECT_NAME, 'secret_settings.py')
 
-
 # ------
 for path in [LOGGING_DIR, STATIC_ROOT, MEDIA_ROOT, PROJECT_DATA_DIR, __TEMPLATE_DIR]:
     if not os.path.exists(path):
@@ -35,6 +34,7 @@ for path in [LOGGING_DIR, STATIC_ROOT, MEDIA_ROOT, PROJECT_DATA_DIR, __TEMPLATE_
 if not os.path.exists(SECRET_SETTINGS_FILE):
     with open(SECRET_SETTINGS_FILE, 'w') as f:
         from django.utils.crypto import get_random_string
+
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
         f.write("SECRET_KEY = '%s'\n" % get_random_string(50, chars))
         f.close()
@@ -57,13 +57,12 @@ RELEASE_HOSTS = [
 ALLOWED_HOSTS = [
     HOSTNAME,
     '127.0.0.1',
-    'events-dev',
     'events.marfa.team',
+    'events.marfa.dev',
 ]
 
 if HOSTNAME in RELEASE_HOSTS:
     DEBUG = False
-
 
 INSTALLED_APPS = [
     'django.contrib.contenttypes',
@@ -72,18 +71,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    # 'django.contrib.sites',
     'rest_framework',
     'django_cas_ng',
     'garbage',
 
     'events',
     'notifications',
-    'django_congen',
 ]
 
 if not DEBUG:
     import raven
+
     INSTALLED_APPS += ('raven.contrib.django.raven_compat',)
 
 
@@ -148,7 +146,6 @@ CACHES = {
     },
 }
 
-
 TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 USE_L10N = True
@@ -162,7 +159,6 @@ LANGUAGES = (
     ('ru', 'ru'),
 )
 
-
 # BATTERIES
 # =========
 REST_FRAMEWORK = {
@@ -175,7 +171,6 @@ REST_FRAMEWORK = {
 
 GARBAGE_USE_CAS = True
 GARBAGE_CAS_ADMINS_ONLY = True
-
 
 # REDEFINE
 from .local_settings import *
