@@ -1,12 +1,14 @@
--e git+https://github.com/night-crawler/django-garbage.git#egg=django-garbage
-aiohttp==1.1.5
-django
-djangorestframework
-django-cas-ng
-django-url-filter
+# WARNING: check a version of packages attentively!
+
+### CORE
+django==1.10.5
+djangorestframework==3.5.3
+django-url-filter==0.2.0
+psycopg2==2.7.3
+python-memcached==1.58
+
+### MISC (a version of packages does not matter)
 furl
-psycopg2
-python-memcached
 gunicorn
 pytz
 raven

@@ -72,8 +72,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'rest_framework',
-    'django_cas_ng',
-    'garbage',
 
     'events',
     'notifications',
@@ -168,9 +166,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'DEFAULT_FILTER_BACKENDS': ('url_filter.integrations.drf.DjangoFilterBackend',)
 }
-
-GARBAGE_USE_CAS = True
-GARBAGE_CAS_ADMINS_ONLY = True
 
 # REDEFINE
 from .local_settings import *
