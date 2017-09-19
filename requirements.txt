@@ -1,13 +1,1 @@
--e git+https://github.com/night-crawler/django-garbage.git#egg=django-garbage
-aiohttp==1.1.5
-django
-djangorestframework
-django-cas-ng
-django-url-filter
-furl
-psycopg2
-python-memcached
-gunicorn
-pytz
-raven
-requests
+-r requirements/base.txt
