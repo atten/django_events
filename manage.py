@@ -3,6 +3,25 @@ import os
 import sys
 
 
+def run_gunicorn(is_production: bool, ensure_connection_alive: bool=False):
+    from django_events.wsgi import application  # noqa
+    from django_docker_helpers.management import run_gunicorn  # noqa
+
+    if ensure_connection_alive:
+        ensure_connections()
+
+    gunicorn_module_name = 'gunicorn_prod' if is_production else 'gunicorn_dev'
+    run_gunicorn(application, gunicorn_module_name=gunicorn_module_name)
+
+
+def ensure_connections():
+    from django_docker_helpers.db import ensure_databases_alive, ensure_caches_alive, migrate  # noqa
+
+    ensure_databases_alive(100)
+    ensure_caches_alive(100)
+    migrate()
+
+
 if __name__ == '__main__':
     BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 
@@ -12,7 +31,6 @@ if __name__ == '__main__':
     IS_DOCKERIZED = bool(int(os.environ.get('DOCKERIZED', 0) or 0))
 
     if IS_DOCKERIZED:
-        from cli.run_ensure_connections import ensure_connections
         ensure_connections()
 
     if len(sys.argv) == 2:
@@ -27,9 +45,8 @@ if __name__ == '__main__':
                 os.environ.setdefault('UWSGI_STATIC_SAFE', str(settings.UWSGI_STATIC_SAFE))
 
         if sys.argv[1] == 'gunicorn':
-            # ./manage.py gunicorn
-            from cli.run_gunicorn import run_gunicorn
             run_gunicorn(IS_PRODUCTION)
+            exit()
 
     from django.core.management import execute_from_command_line
     execute_from_command_line(sys.argv)

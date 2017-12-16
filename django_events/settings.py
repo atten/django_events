@@ -6,7 +6,7 @@ from django_docker_helpers.utils import load_yaml_config
 from . import __version__
 
 
-COMMON_BASE_PORT = 17888
+COMMON_BASE_PORT = 43210
 
 # PATHS
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -64,6 +64,13 @@ SECRET_KEY = configure('secret_key', SECRET_KEY)
 
 HOSTNAME = socket.gethostname()
 ALLOWED_HOSTS = [HOSTNAME] + configure('hosts', [])
+INTERNAL_IPS = configure('internal_ips', ['127.0.0.1'])
+
+if configure('security', False):
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 
 INSTALLED_APPS = [
@@ -172,12 +179,14 @@ LANGUAGES = (
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('events.permissions.HasValidApiKey',),
     'DEFAULT_AUTHENTICATION_CLASSES': [],
+    'URL_FORMAT_OVERRIDE': None,  # don't use 'format' as url argument
     'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
     'PAGE_SIZE': 10,
     'DEFAULT_FILTER_BACKENDS': ('url_filter.integrations.drf.DjangoFilterBackend',)
 }
 
 
+# UWSGI
 UWSGI_STATIC_SAFE = configure('uwsgi.static_safe', False)
 
 

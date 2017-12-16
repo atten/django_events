@@ -1,20 +1,24 @@
 # WARNING: check a version of packages attentively!
 
 ### CORE
-django
-djangorestframework
-django-url-filter
-psycopg2
-python-memcached
+django==2.0
+djangorestframework==3.7.3
+django-url-filter==0.3.4
+psycopg2==2.7.3.2
+python-memcached==1.59
 pyaml>=17.7
 
 ### MISC (a version of packages does not matter)
-furl
-gunicorn
-pytz
-raven
-requests
+furl==1.0.1
+gunicorn==19.7.1
+pytz==2017.3
+raven==6.4.0
+requests==2.18.4
 
 -e git+https://github.com/night-crawler/django-docker-helpers.git@0.0.9#egg=django-docker-helpers
 uwsgi==2.0.15
-django-uwsgi==0.2.1
+
+
+# django2.0 support
+# django-uwsgi==0.2.1
+-e git+https://github.com/unbit/django-uwsgi.git#egg=django_uwsgi
