@@ -29,8 +29,8 @@ services:
             - postgres
         volumes:
             - .:/application/django_events  # development only
-            - static:/application/marfa/marfa/static
-            - media:/application/marfa/marfa/media
+            - static:/application/django_events/static
+            - media:/application/django_events/media
         environment:
             DJANGO_CONFIG_FILE_NAME: within-docker.yml
             UWSGI_CHEAPER: 1

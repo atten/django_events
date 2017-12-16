@@ -41,8 +41,8 @@ ADD . /application/django_events
 # https://github.com/docker/compose/issues/3270#issuecomment-206214034
 RUN mkdir /application/log \
   && mkdir /application/run \
-  && mkdir /application/django_events/django_events/static \
-  && mkdir /application/django_events/django_events/media \
+  && mkdir /application/django_events/static \
+  && mkdir /application/django_events/media \
   && adduser --uid 1000 --home /application --disabled-password --gecos "" django_events \
   && chown -hR django_events: /application
 

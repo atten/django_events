@@ -10,6 +10,7 @@ docker/data
 docs/
 scripts/docker_*
 static/
+media/
 django_events/docs_settings.py
 django_events/local_settings.py
 django_events/secret_settings.py
