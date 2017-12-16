@@ -31,10 +31,10 @@ class EventViewSet(MultiSerializerViewSetMixin,
         if hasattr(self.request, 'app'):
             queryset = queryset.filter(app=self.request.app)
 
-        scopes = self.request.GET.get('scope').split(',')
-        qu = Q()
+        scopes = self.request.GET.get('scope', '').split(',')
+        filters = Q()
         for scope in scopes:
-            qu |= Q(context__scope=scope)
-        queryset = queryset.filter(qu)
+            filters |= Q(context__scope=scope)
+        queryset = queryset.filter(filters)
 
         return queryset

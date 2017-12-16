@@ -1,0 +1,44 @@
+version: '2'
+services:
+    memcached:
+        image: memcached:alpine
+        container_name: msa_events__memcached__dev
+        hostname: msa_events__memcached__dev
+
+        mem_limit: 64m
+        command: memcached -m 60m
+
+    postgres:
+        image: postgres:10.1-alpine
+        container_name: msa_events__postgres__dev
+        hostname: msa_events__postgres__dev
+
+        volumes:
+            - ./docker/configs/postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
+            - ./docker/data/postgresql:/var/lib/postgresql/data
+        ports:
+            - 6440:5432
+
+    web:
+        image: msa_events:latest
+        container_name: msa_events__web__dev
+        hostname: msa_events__web__dev
+
+        depends_on:
+            - memcached
+            - postgres
+        volumes:
+            - .:/application/django_events  # development only
+            - static:/application/marfa/marfa/static
+            - media:/application/marfa/marfa/media
+        environment:
+            DJANGO_CONFIG_FILE_NAME: within-docker.yml
+            UWSGI_CHEAPER: 1
+#            command: runserver 0.0.0.0:8000
+            command: runuwsgi
+        ports:
+            - 43210:8000  # external app's port / internal app's port (MUST be 8000 by default)
+
+volumes:
+    static: {}
+    media: {}

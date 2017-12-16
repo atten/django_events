@@ -1,7 +1,12 @@
 debug: true
 
-uwsgi:
-  static_safe: '/'
+# enable Django SECURE_* settings
+security: false
+
+port: 8000
+
+#uwsgi:
+#  static_safe: '/'
 
 # DJANGO ALLOWED_HOSTS
 hosts:
@@ -28,7 +33,9 @@ caches:
 raven:
   dsn:
 
-# enable Django SECURE_* settings
-security: true
+# DJANGO CREATE SERVICE SUPERUSER
+superuser:
+  username: 'admin'
+  password: 'admin'
+  email: 'admin@example.com'
 
-debug: false

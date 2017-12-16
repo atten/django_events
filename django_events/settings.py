@@ -6,8 +6,6 @@ from django_docker_helpers.utils import load_yaml_config
 from . import __version__
 
 
-COMMON_BASE_PORT = 43210
-
 # PATHS
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_PATH = BASE_DIR
@@ -65,6 +63,7 @@ SECRET_KEY = configure('secret_key', SECRET_KEY)
 HOSTNAME = socket.gethostname()
 ALLOWED_HOSTS = [HOSTNAME] + configure('hosts', [])
 INTERNAL_IPS = configure('internal_ips', ['127.0.0.1'])
+COMMON_BASE_PORT = configure('port', 43210, coerce_type=int)
 
 if configure('security', False):
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -123,11 +122,13 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.i18n',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+
+                'django.template.context_processors.i18n',
+
                 'django.template.context_processors.media',
                 'django.template.context_processors.csrf',
                 'django.template.context_processors.tz',
@@ -176,14 +177,25 @@ LANGUAGES = (
 
 # BATTERIES
 # =========
+
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': ('events.permissions.HasValidApiKey',),
+    'DEFAULT_PERMISSION_CLASSES': ('events.permissions.ValidApiKeyOrDenied',),
     'DEFAULT_AUTHENTICATION_CLASSES': [],
     'URL_FORMAT_OVERRIDE': None,  # don't use 'format' as url argument
     'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
     'PAGE_SIZE': 10,
     'DEFAULT_FILTER_BACKENDS': ('url_filter.integrations.drf.DjangoFilterBackend',)
 }
+
+if DEBUG:
+    REST_FRAMEWORK = {
+        'DEFAULT_PERMISSION_CLASSES': ('events.permissions.ValidApiKeyOrSuperuserOrDenied',),
+        'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework.authentication.SessionAuthentication',),
+        'URL_FORMAT_OVERRIDE': None,  # don't use 'format' as url argument
+        'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+        'PAGE_SIZE': 10,
+        'DEFAULT_FILTER_BACKENDS': ('url_filter.integrations.drf.DjangoFilterBackend',)
+    }
 
 
 # UWSGI
