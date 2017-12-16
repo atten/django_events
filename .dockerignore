@@ -1,0 +1,22 @@
+# VARIOUS GARBAGE
+.tmp/
+.git/
+.idea/
+.cache/
+__pycache__
+
+# APP'S DIRS
+docker/data
+docs/
+scripts/docker_*
+static/
+django_events/docs_settings.py
+django_events/local_settings.py
+django_events/secret_settings.py
+django_events/test_settings.py
+src/
+
+docker-compose.yml
+Dockerfile
+.bumpversion.cfg
+gunicorn_dev.py

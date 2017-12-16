@@ -1,11 +1,12 @@
 import os
 import socket
 
-from django.core.urlresolvers import reverse_lazy
+from django_docker_helpers.utils import load_yaml_config
 
-gettext = lambda s: s
+from . import __version__
 
-DEBUG = True
+
+COMMON_BASE_PORT = 17888
 
 # PATHS
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,7 +27,7 @@ MEDIA_URL = '/media/'
 LOCAL_SETTINGS_FILE = os.path.join(BASE_DIR, PROJECT_NAME, 'local_settings.py')
 SECRET_SETTINGS_FILE = os.path.join(BASE_DIR, PROJECT_NAME, 'secret_settings.py')
 
-# ------
+# create and populate secret_settings && local_settings
 for path in [LOGGING_DIR, STATIC_ROOT, MEDIA_ROOT, PROJECT_DATA_DIR, __TEMPLATE_DIR]:
     if not os.path.exists(path):
         os.makedirs(path, mode=0o755, exist_ok=True)
@@ -41,28 +42,29 @@ if not os.path.exists(SECRET_SETTINGS_FILE):
 
 if not os.path.exists(LOCAL_SETTINGS_FILE):
     with open(LOCAL_SETTINGS_FILE, 'w') as f:
-        f.write('# -*- coding: utf-8 -*-\n')
+        f.write('\n')
         f.close()
 
-from .secret_settings import *
 
-# HOSTS
+from .secret_settings import *  # noqa
+
+
+# =================== LOAD YAML CONFIG =================== #
+CONFIG, configure = load_yaml_config(
+    '',
+    os.path.join(
+        BASE_DIR, 'django_events', 'config',
+        os.environ.get('DJANGO_CONFIG_FILE_NAME', 'without-docker.yml')
+    )
+)
+# ======================================================== #
+
+DEBUG = configure('debug', False)
+SECRET_KEY = configure('secret_key', SECRET_KEY)
+
 HOSTNAME = socket.gethostname()
-RELEASE_HOSTS = [
-    'primary',
-    'hatebase',
-    'burble',
-]
+ALLOWED_HOSTS = [HOSTNAME] + configure('hosts', [])
 
-ALLOWED_HOSTS = [
-    HOSTNAME,
-    '127.0.0.1',
-    'events.marfa.team',
-    'events.marfa.dev',
-]
-
-if HOSTNAME in RELEASE_HOSTS:
-    DEBUG = False
 
 INSTALLED_APPS = [
     'django.contrib.contenttypes',
@@ -73,15 +75,21 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'rest_framework',
 
+    'django_uwsgi',
+
     'events',
     'notifications',
 ]
 
-if not DEBUG:
-    import raven
+# RAVEN
+if configure('raven', False) and configure('raven.dsn', ''):
+    import raven  # noqa
 
-    INSTALLED_APPS += ('raven.contrib.django.raven_compat',)
-
+    INSTALLED_APPS += ['raven.contrib.django.raven_compat']
+    RAVEN_CONFIG = {
+        'dsn': configure('raven.dsn', None),
+        'release': __version__,
+    }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -90,7 +98,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -127,20 +134,23 @@ WSGI_APPLICATION = 'django_events.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'msa_events',
-        'USER': '',
-        'HOST': '',
-        'PORT': '',
-        'CONN_MAX_AGE': 60
+        'ENGINE': configure('db.name', 'django.db.backends.postgresql'),
+        'HOST': configure('db.host', 'localhost'),
+        'PORT': configure('db.port', 5432),
+
+        'NAME': configure('db.database', 'msa_events'),
+        'USER': configure('db.user', 'msa_events'),
+        'PASSWORD': configure('db.password', 'msa_events'),
+
+        'CONN_MAX_AGE': int(configure('db.conn_max_age', 60)),
     }
 }
 
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-        'KEY_PREFIX': 'marfa-dev'
+        'LOCATION': configure('caches.memcached.location', '127.0.0.1:11211'),
+        'KEY_PREFIX': configure('caches.memcached.key_prefix', 'msa:events:'),
     },
 }
 
@@ -151,7 +161,7 @@ USE_TZ = True
 LOCALE_PATHS = (
     os.path.abspath(os.path.join(ROOT_PATH, 'locale')),
 )
-# LANGUAGE_CODE = 'ru'
+
 LANGUAGES = (
     ('en', 'en'),
     ('ru', 'ru'),
@@ -167,5 +177,9 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('url_filter.integrations.drf.DjangoFilterBackend',)
 }
 
+
+UWSGI_STATIC_SAFE = configure('uwsgi.static_safe', False)
+
+
 # REDEFINE
-from .local_settings import *
+from .local_settings import *  # noqa

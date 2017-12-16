@@ -21,10 +21,10 @@ class Destination(models.Model):
     app = models.CharField(max_length=100, unique=True)
     mailer_api_url = models.URLField(max_length=255)
     mailer_api_key = models.CharField(max_length=255)
-    cas_profile_url = models.URLField(max_length=255,
-                                      validators=[validators.validate_integer_placeholder],
-                                      help_text="e.g. http://example.com/api/v1/profile/%d/. "
-                                                "'%d' is required for substitute user_id.")
+    cas_profile_url = models.URLField(
+        max_length=255, validators=[validators.validate_integer_placeholder],
+        help_text="e.g. http://example.com/api/v1/profile/%d/. '%d' is a template for user_id."
+    )
     cas_api_key = models.CharField(max_length=255)
     comment = models.CharField(max_length=100, blank=True, null=True)
 
@@ -132,10 +132,12 @@ class NotifyTimeOptions(models.Model):
         return self.kind is NotifyTimeOptions.Kind_Instant
 
     def save(self, **kwargs):
-        if self.time is None and self.kind in (NotifyTimeOptions.Kind_Delayed,
-                                               NotifyTimeOptions.Kind_Daily,
-                                               NotifyTimeOptions.Kind_Weekly,
-                                               NotifyTimeOptions.Kind_Monthly):
+        if self.time is None and self.kind in (
+            NotifyTimeOptions.Kind_Delayed,
+            NotifyTimeOptions.Kind_Daily,
+            NotifyTimeOptions.Kind_Weekly,
+            NotifyTimeOptions.Kind_Monthly
+        ):
             raise ValidationError('time', _('This field is required for specified kind.'))
 
         if self.kind is NotifyTimeOptions.Kind_Weekly and self.day not in range(0, 7):
@@ -148,16 +150,15 @@ class NotifyTimeOptions(models.Model):
 
 
 class Notify(models.Model):
-    trigger = models.ForeignKey(EventTrigger, related_name='notifiers')
-    receiver_path = models.ForeignKey(EventReceiverPath)
-    template_slug = models.CharField(max_length=100,
-                                     validators=[validators.validate_str_placeholder],
-                                     help_text=_('Template slug for single event.'
-                                                 '"%s" is required for substitute language code.'))
-    template_slug_mult = models.CharField(max_length=100,
-                                          validators=[validators.validate_str_placeholder],
-                                          help_text=_('Template slug for bundle of events (packet delivery).'
-                                                      '"%s" is required for substitute language code.'))
+    trigger = models.ForeignKey(EventTrigger, related_name='notifiers', on_delete=models.CASCADE)
+    receiver_path = models.ForeignKey(EventReceiverPath, on_delete=models.CASCADE)
+    template_slug = models.CharField(
+        max_length=100, validators=[validators.validate_str_placeholder],
+        help_text=_('Single event template slug. "%s" is a language code template variable.'))
+    template_slug_mult = models.CharField(
+        max_length=100, validators=[validators.validate_str_placeholder],
+        help_text=_('Template slug for bundle of events (packet delivery). '
+                    '"%s" is a language code template.'))
 
     class Meta:
         verbose_name = _('Notify')
@@ -165,10 +166,12 @@ class Notify(models.Model):
         unique_together = ('trigger', 'receiver_path')
 
     def __str__(self):
-        return '%s #%d: "%s" -> "%s"' % (self._meta.verbose_name,
-                                         self.id,
-                                         self.trigger.comment or self.trigger,
-                                         self.receiver_path.comment or self.receiver_path)
+        return '%s #%d: "%s" -> "%s"' % (
+            self._meta.verbose_name,
+            self.id,
+            self.trigger.comment or self.trigger,
+            self.receiver_path.comment or self.receiver_path
+        )
 
     def get_options_for_user(self, user_id):
         """выбираем все кастомные способы оповещения для указанного юзера + способы по умолчанию,
@@ -214,11 +217,11 @@ class Notify(models.Model):
                 cas_url = furl(dst.cas_profile_url % receiver_id)
                 cas_url.args['api_key'] = dst.cas_api_key
                 cas_url = cas_url.url
-                profile_responce = requests.get(cas_url)
-                if profile_responce.status_code != 200:
-                    print('Warning: "%s" returns %d.' % (cas_url, profile_responce.status_code))
+                profile_response = requests.get(cas_url)
+                if profile_response.status_code != 200:
+                    print('Warning: "%s" returned %d.' % (cas_url, profile_response.status_code))
                     return
-                profile = json.loads(profile_responce.text)
+                profile = json.loads(profile_response.text)
                 cache.set(profile_cache_key, profile, 10)  # кладём загруженный профиль в кэш на 10с
             else:
                 profile = cached_profile
@@ -274,7 +277,7 @@ class NotifyOptionsMixIn(models.Model):
 
 
 class DefaultNotifyOptions(NotifyOptionsMixIn):
-    base = models.ForeignKey(Notify, related_name='default_options')
+    base = models.ForeignKey(Notify, related_name='default_options', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _('Default notify options')
@@ -283,7 +286,7 @@ class DefaultNotifyOptions(NotifyOptionsMixIn):
 
 
 class CustomNotifyOptions(NotifyOptionsMixIn):
-    base = models.ForeignKey(Notify, related_name='custom_options')
+    base = models.ForeignKey(Notify, related_name='custom_options', on_delete=models.CASCADE)
     msa_user_id = models.IntegerField()
 
     class Meta:

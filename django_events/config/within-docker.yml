@@ -1,0 +1,34 @@
+debug: true
+
+uwsgi:
+  static_safe: '/'
+
+# DJANGO ALLOWED_HOSTS
+hosts:
+  - 127.0.0.1
+  - localhost
+  - events.marfa.dev
+
+internal_ips:
+  - 127.0.0.1
+
+db:
+  engine: django.db.backends.postgresql
+  host: postgres
+  port: 5432
+  database: msa_events
+  user: msa_events
+  password: msa_events
+
+caches:
+  memcached:
+    location: memcached:11211
+
+# SENTRY RAVEN SETUP
+raven:
+  dsn:
+
+# enable Django SECURE_* settings
+security: true
+
+debug: false
